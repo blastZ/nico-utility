@@ -8,10 +8,10 @@ node_modules
 
 # Project
 dist
-joi
-mongo
-index.js
-index.d.ts
+/joi
+/mongo
+/index.js
+/index.d.ts
 
 # Local files
 assets
