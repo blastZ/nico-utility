@@ -2,6 +2,12 @@ import Mongoose from 'mongoose';
 
 export = class Mongo {
   static async connect(mongoose: typeof Mongoose, url: string) {
+    try {
+      new URL(url);
+    } catch (err) {
+      throw new Error('Invalid connect url');
+    }
+
     await mongoose.connect(url, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
