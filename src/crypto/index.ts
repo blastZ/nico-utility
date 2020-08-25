@@ -2,6 +2,7 @@ import crypto from 'crypto';
 
 type AsymmetricMethod = 'public-encrypt' | 'public-decrypt' | 'private-encrypt' | 'private-decrypt';
 type Encoding = 'base64' | 'binary' | 'hex';
+type Data = string | Buffer;
 
 export class NicoCrypto {
   private readonly MAX_ENCRYPT_BLOCK = 512 - 11; // 4096 bit rsa key length - rsa_pkcs1_adding length
@@ -9,7 +10,7 @@ export class NicoCrypto {
 
   private parseAsymmetricData(
     method: AsymmetricMethod,
-    data: string,
+    data: Data,
     key: string,
     options?: {
       encoding?: Encoding;
@@ -25,8 +26,14 @@ export class NicoCrypto {
       throw new Error('method type must be encrypt or decrypt');
     }
 
+    let buf: Buffer;
+    if (typeof data === 'string') {
+      buf = Buffer.from(data, options?.encoding || 'utf8');
+    } else {
+      buf = data;
+    }
+
     const padding = crypto.constants.RSA_PKCS1_PADDING;
-    const buf = Buffer.from(data, options?.encoding || 'utf8');
     const inputLength = buf.byteLength;
     const bufs = [];
 
@@ -67,19 +74,19 @@ export class NicoCrypto {
     return result;
   }
 
-  publicEncrypt(data: string, publicKey: string) {
-    return this.parseAsymmetricData('public-encrypt', data, publicKey);
+  publicEncrypt(data: Data, publicKey: string, options?: { encoding: Encoding }) {
+    return this.parseAsymmetricData('public-encrypt', data, publicKey, options);
   }
 
-  publicDecrypt(data: string, publicKey: string, options?: { encoding?: Encoding }) {
+  publicDecrypt(data: Data, publicKey: string, options?: { encoding?: Encoding }) {
     return this.parseAsymmetricData('public-decrypt', data, publicKey, options);
   }
 
-  privateEncrypt(data: string, privateKey: string) {
-    return this.parseAsymmetricData('private-encrypt', data, privateKey);
+  privateEncrypt(data: Data, privateKey: string, options?: { encoding: Encoding }) {
+    return this.parseAsymmetricData('private-encrypt', data, privateKey, options);
   }
 
-  privateDecrypt(data: string, privateKey: string, options?: { encoding?: Encoding }) {
+  privateDecrypt(data: Data, privateKey: string, options?: { encoding?: Encoding }) {
     return this.parseAsymmetricData('private-decrypt', data, privateKey, options);
   }
 

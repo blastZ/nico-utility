@@ -2,7 +2,7 @@
   "name": "@blastz/nico-utility",
   "version": "0.2.0",
   "description": "nico utilities",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "tsc": "tsc",
     "push": "npm run tsc && npm publish --access public --registry=https://registry.npmjs.org",
