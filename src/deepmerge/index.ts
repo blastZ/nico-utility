@@ -2,7 +2,9 @@ function isMergeableObject(val: any) {
   const nonNullObject = val && typeof val === 'object';
 
   return (
-    nonNullObject && Object.prototype.toString.call(val) !== '[object RegExp]' && Object.prototype.toString.call(val) !== '[object Date]'
+    nonNullObject &&
+    Object.prototype.toString.call(val) !== '[object RegExp]' &&
+    Object.prototype.toString.call(val) !== '[object Date]'
   );
 }
 
@@ -12,7 +14,9 @@ function emptyTarget(val: any) {
 
 function cloneIfNecessary(value: any, optionsArgument: OptionsArgument): any {
   const clone = optionsArgument && optionsArgument.clone === true;
-  return clone && isMergeableObject(value) ? deepmerge(emptyTarget(value), value, optionsArgument) : value;
+  return clone && isMergeableObject(value)
+    ? deepmerge(emptyTarget(value), value, optionsArgument)
+    : value;
 }
 
 function defaultArrayMerge(target: any, source: any, optionsArgument: OptionsArgument) {
@@ -36,13 +40,16 @@ function mergeObject(target: any, source: any, optionsArgument: OptionsArgument)
       destination[key] = cloneIfNecessary(target[key], optionsArgument);
     });
   }
-  Object.keys(source).forEach(function (key) {
-    if (!isMergeableObject(source[key]) || !target[key]) {
-      destination[key] = cloneIfNecessary(source[key], optionsArgument);
-    } else {
-      destination[key] = deepmerge(target[key], source[key], optionsArgument);
-    }
-  });
+  if (isMergeableObject(source)) {
+    Object.keys(source).forEach(function (key) {
+      if (!isMergeableObject(source[key]) || !isMergeableObject(target) || !target[key]) {
+        destination[key] = cloneIfNecessary(source[key], optionsArgument);
+      } else {
+        destination[key] = deepmerge(target[key], source[key], optionsArgument);
+      }
+    });
+  }
+
   return destination;
 }
 
@@ -52,7 +59,9 @@ export function deepmerge(target: any, source: any, optionsArgument?: OptionsArg
   const arrayMerge = options.arrayMerge || defaultArrayMerge;
 
   if (array) {
-    return Array.isArray(target) ? arrayMerge(target, source, options) : cloneIfNecessary(source, options);
+    return Array.isArray(target)
+      ? arrayMerge(target, source, options)
+      : cloneIfNecessary(source, options);
   } else {
     return mergeObject(target, source, options);
   }

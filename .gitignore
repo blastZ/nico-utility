@@ -1,4 +1,5 @@
 # Local Configuration
+/test.js
 
 # Dependencies
 node_modules
